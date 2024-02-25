@@ -7,6 +7,7 @@ public class Phase3 {
 
 	private static final String USERID = "xavier";
 	private static final String PASSWORD = "0509";
+	static Scanner in = new Scanner(System.in);
 
 	public static Connection connect2postgres() {
 		Connection connection = null;
@@ -34,9 +35,33 @@ public class Phase3 {
 	}
 
 	public static void search_by_category(Connection conn) throws SQLException {
-		Statement x = conn.createStatement();
-		x.execute("SELECT * FROM business WHERE categories LIKE '%restaurant%'");
-		ResultSet rs = x.executeQuery("SELECT * FROM business WHERE categories LIKE '%restaurant%'");
+		// prompt for state, city, and categories seperated by commas
+		System.out.println("Enter the state: ");
+		Scanner in = new Scanner(System.in);
+		String state = in.nextLine();
+		System.out.println("Enter the city: ");
+		String city = in.nextLine();
+		System.out.println("Enter the categories (comma seerated): ");
+		String categories = in.nextLine();
+		in.close();
+
+		// create a statement and execute the query
+		Statement stmt = conn.createStatement();
+		String query = "SELECT b.name, b.address, b.city, b.state, b.stars, b.review_count, b.is_open, bc.categories FROM business b, business_categories bc WHERE b.business_id = bc.business_id AND b.state = '"
+				+ state + "' AND b.city = '" + city + "' AND bc.categories IN (" + categories + ")";
+		ResultSet rs = stmt.executeQuery(query);
+		// print the results
+		while (rs.next()) {
+			System.out.println("Name: " + rs.getString("name"));
+			System.out.println("Address: " + rs.getString("address"));
+			System.out.println("City: " + rs.getString("city"));
+			System.out.println("State: " + rs.getString("state"));
+			System.out.println("Stars: " + rs.getString("stars"));
+			System.out.println("Review Count: " + rs.getString("review_count"));
+			System.out.println("Is Open: " + rs.getString("is_open"));
+			System.out.println("Categories: " + rs.getString("categories"));
+			System.out.println();
+		}
 
 	}
 
@@ -54,18 +79,15 @@ public class Phase3 {
 
 	public static void choose_option(Connection conn) {
 		// create a scanner so we can read the command-line input
-		Scanner scanner = new Scanner(System.in);
 
 		String input = "";
 
 		// Loop until the user inputs 'q' to quit
 		while (!(input.equals("1") || input.equals("2") || input.equals("3"))) {
 			System.out.println("\n1 - Search busnesses\n2 - Display friends tips\n3 - Exit");
-			input = scanner.nextLine().toLowerCase();
+			input = in.nextLine().toLowerCase();
 			// ensure that input is equal to one of the options and break if so
 		}
-
-		scanner.close();
 
 		switch (input) {
 			case "1":
