@@ -43,7 +43,6 @@ public class Phase3 {
 		String city = in.nextLine();
 		System.out.println("Enter the categories (comma seerated): ");
 		String categories = in.nextLine();
-		in.close();
 
 		// create a statement and execute the query
 		Statement stmt = conn.createStatement();
