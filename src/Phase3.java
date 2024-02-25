@@ -1,5 +1,6 @@
 import java.sql.*;
 import java.util.Scanner;
+import java.util.Arrays;
 
 public class Phase3 {
 	// Replace the "USERID" and "PASSWORD" with your PostgreSQL username and
@@ -46,22 +47,40 @@ public class Phase3 {
 
 		// create a statement and execute the query
 		Statement stmt = conn.createStatement();
-		String query = "SELECT b.name, b.address, b.city, b.state, b.stars, b.review_count, b.is_open, bc.categories FROM business b, business_categories bc WHERE b.business_id = bc.business_id AND b.state = '"
-				+ state + "' AND b.city = '" + city + "' AND bc.categories IN (" + categories + ")";
+		// for each category, create a subquery and intersect them
+		String initalQuery = "SELECT business_id, name, street_address, num_tips from (";
+
+		String[] cats = categories.split(",");
+
+		StringBuilder queryBuilder = new StringBuilder(initalQuery);
+		for (int i = 0; i < cats.length; i++) {
+			queryBuilder
+					.append("(select business.business_id, business.name, business.street_address, business.num_tips")
+					.append(" from Business")
+					.append(" join businesscategories on business.business_id = businesscategories.business_id")
+					.append(" where business.state = '").append(state).append("'")
+					.append(" and business.city = '").append(city).append("'")
+					.append(" and businesscategories.category_name = '").append(cats[i]).append("')");
+			if (i < cats.length - 1) {
+				queryBuilder.append(" INTERSECT ");
+			} else {
+				queryBuilder.append(") as b")
+						.append(" order by name;");
+			}
+		}
+		String query = queryBuilder.toString();
+		System.out.println(query);
+
 		ResultSet rs = stmt.executeQuery(query);
 		// print the results
 		while (rs.next()) {
-			System.out.println("Name: " + rs.getString("name"));
-			System.out.println("Address: " + rs.getString("address"));
-			System.out.println("City: " + rs.getString("city"));
-			System.out.println("State: " + rs.getString("state"));
-			System.out.println("Stars: " + rs.getString("stars"));
-			System.out.println("Review Count: " + rs.getString("review_count"));
-			System.out.println("Is Open: " + rs.getString("is_open"));
-			System.out.println("Categories: " + rs.getString("categories"));
-			System.out.println();
-		}
+			String id = rs.getString("business_id");
+			String name = rs.getString("name");
+			String address = rs.getString("street_address");
+			String tips = rs.getString("num_tips");
+			System.out.println("ID: " + id + " Name: " + name + " Address: " + address + " Tips: " + tips);
 
+		}
 	}
 
 	public static void search_friends_tips(Connection conn) throws SQLException {
