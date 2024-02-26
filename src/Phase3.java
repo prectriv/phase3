@@ -38,7 +38,6 @@ public class Phase3 {
 	public static void searchByCategory(Connection conn) throws SQLException {
 		// prompt for state, city, and categories seperated by commas
 		System.out.print("Enter the state: ");
-		Scanner in = new Scanner(System.in);
 		String state = in.nextLine();
 		System.out.print("Enter the city: ");
 		String city = in.nextLine();
@@ -196,7 +195,7 @@ public class Phase3 {
 		// create statement and execute the query
 		Statement stmt = conn.createStatement();
 		String str = String.format("INSERT INTO tips (user_id, business_id, tip_timestamp, tip_text) VALUES ('%s', '%s', '%s', '%s')",
-				user_id, business_id, /* timestamp */, tip_text);
+				user_id, business_id, tip_text);
 		stmt.executeUpdate(str);
 		System.out.println("Tip added successfully!");
 
