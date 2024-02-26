@@ -8,7 +8,7 @@ public class Phase3 {
 	// password (the postgreSQL user you created in Phase2).
 
 	// TODO: ensure this is changed to your local postgres username and password
-	private static final String USERID = "xavier";
+	private static final String USERID = "remy";
 	private static final String PASSWORD = "0509";
 	static Scanner in = new Scanner(System.in);
 
@@ -37,7 +37,7 @@ public class Phase3 {
 		return connection;
 	}
 
-	// TASK 1:
+	// TASK 1/2:
 	public static void searchByCategory(Connection conn) throws SQLException {
 		// prompt for state, city, and categories seperated by commas
 		System.out.print("Enter the state: ");
@@ -174,9 +174,54 @@ public class Phase3 {
 		chooseOption(conn);
 
 	}
-
+	//TASK 5:
 	public static void searchFriendsTips(Connection conn) throws SQLException {
+		System.out.print("Enter the user id: ");
+		String user_id = in.nextLine();
+		System.out.print("Enter the state: ");
+		String state_string = in.nextLine();
+		System.out.print("Enter the city: ");
+		String city_string = in.nextLine();
 
+			// create statement and execute the query
+			Statement stmt = conn.createStatement();
+			String str = String.format(
+					"SELECT Business.name, street_address, zipcode, Business.num_tips, Users.name as usersname, Tips.tip_text, Tips.tip_timestamp FROM Business JOIN Tips ON Business.business_id = Tips.business_id JOIN Users ON Tips.user_id = Users.user_id JOIN Friends ON Users.user_id = Friends.friend_id WHERE Business.city = '%s' AND Business.state = '%s' AND Friends.user_id = '%s' ORDER BY Business.name;",
+					city_string, state_string ,user_id);
+			// create a statement and execute the query
+		final ResultSet rs = stmt.executeQuery(str);
+
+		// print the results
+		int ctr = 1;
+		String header = String.format("\n%-3s | %-12s | %-19s | %-5s | %-50s", "No.", "Name", "Timestamp",
+				"Likes", "Tip Text");
+		System.out.println(header);
+		// print a line of dashes to separate the header from the data
+		char[] chars = new char[header.length()];
+		Arrays.fill(chars, '-');
+		System.out.println(new String(chars)); 
+		// print the data itself
+		while (rs.next()) {
+			String business_name = rs.getString("name");
+			String street_address = rs.getString("street_address");
+			String zipcode = rs.getString("zipcode");
+			String num_tips = rs.getString("num_tips");
+			String user_name = rs.getString("usersname");
+			String tip = rs.getString("tip_text");
+			String timestamp = rs.getString("tip_timestamp");
+		
+
+			String str2 = String.format("%s|, %s|, %s|, %s|, %s|, %s|, %s",  business_name, street_address, zipcode, num_tips, user_name, tip, timestamp);
+			System.out.println(str2);
+			
+			ctr++;
+		}
+
+		// close the result set and the statement
+		rs.close();
+		stmt.close();
+		// back to menu
+		chooseOption(conn);
 	}
 
 	public static void chooseOption(Connection conn) {
