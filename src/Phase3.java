@@ -1,12 +1,13 @@
 import java.sql.*;
 import java.util.Scanner;
 import java.util.Arrays;
+import java.util.Date;
 
 public class Phase3 {
 	// Replace the "USERID" and "PASSWORD" with your PostgreSQL username and
 	// password (the postgreSQL user you created in Phase2).
 
-	private static final String USERID = "xavier";
+	private static final String USERID = "remy";
 	private static final String PASSWORD = "0509";
 	static Scanner in = new Scanner(System.in);
 
@@ -35,6 +36,7 @@ public class Phase3 {
 		return connection;
 	}
 
+	//TASK 1:
 	public static void searchByCategory(Connection conn) throws SQLException {
 		// prompt for state, city, and categories seperated by commas
 		System.out.print("Enter the state: ");
@@ -102,11 +104,12 @@ public class Phase3 {
 
 	}
 
+	//TASK2:
 	public static void businessOperations(Connection conn) {
 
-		System.out.println("\nBuisness operations:");
-		System.out.println("1 - Disiplay tips for given buisness");
-		System.out.println("2 - Add tip for given buisness");
+		System.out.println("\nBusiness operations:");
+		System.out.println("1 - Disiplay tips for given business");
+		System.out.println("2 - Add tip for given business");
 		System.out.println("3 - Return to main menu");
 		System.out.print("Enter the number of the operation you would like to perform: ");
 		String input = "";
@@ -141,6 +144,7 @@ public class Phase3 {
 		}
 	}
 
+	//TASK 3:
 	public static void displayTips(Connection conn) throws SQLException {
 		// prompt for business id
 		System.out.print("Enter the business id: ");
@@ -183,6 +187,7 @@ public class Phase3 {
 
 	}
 
+	//TASK4:
 	public static void addTip(Connection conn) throws SQLException {
 		// prompt for user ID, business ID and tip text
 		System.out.print("Enter the user id: ");
@@ -191,11 +196,13 @@ public class Phase3 {
 		String business_id = in.nextLine();
 		System.out.print("Enter the tip text: ");
 		String tip_text = in.nextLine();
+		
+		Date curr_date = new Date();
 
 		// create statement and execute the query
 		Statement stmt = conn.createStatement();
-		String str = String.format("INSERT INTO tips (user_id, business_id, tip_timestamp, tip_text) VALUES ('%s', '%s', '%s', '%s')",
-				user_id, business_id, tip_text);
+		String str = String.format("INSERT INTO tips (user_id, business_id, tip_timestamp, likes,tip_text) VALUES ('%s', '%s', '%s', '%s', '%s')",
+				user_id, business_id, curr_date, 0, tip_text);
 		stmt.executeUpdate(str);
 		System.out.println("Tip added successfully!");
 
