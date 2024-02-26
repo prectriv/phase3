@@ -37,12 +37,12 @@ public class Phase3 {
 
 	public static void search_by_category(Connection conn) throws SQLException {
 		// prompt for state, city, and categories seperated by commas
-		System.out.println("Enter the state: ");
+		System.out.print("Enter the state: ");
 		Scanner in = new Scanner(System.in);
 		String state = in.nextLine();
-		System.out.println("Enter the city: ");
+		System.out.print("Enter the city: ");
 		String city = in.nextLine();
-		System.out.println("Enter the categories (comma seerated): ");
+		System.out.print("Enter the categories (comma seperated): ");
 		String categories = in.nextLine();
 
 		// create a statement and execute the query
@@ -50,9 +50,12 @@ public class Phase3 {
 		// for each category, create a subquery and intersect them
 		String initalQuery = "SELECT business_id, name, street_address, num_tips from (";
 
+		// dynamically builds the query based off of the number of categories
 		String[] cats = categories.split(",");
 
 		StringBuilder queryBuilder = new StringBuilder(initalQuery);
+
+		System.out.println("");
 		for (int i = 0; i < cats.length; i++) {
 			queryBuilder
 					.append("(select business.business_id, business.name, business.street_address, business.num_tips")
@@ -64,22 +67,34 @@ public class Phase3 {
 			if (i < cats.length - 1) {
 				queryBuilder.append(" INTERSECT ");
 			} else {
-				queryBuilder.append(") as b")
-						.append(" order by name;");
+				queryBuilder.append(") as b order by name;");
 			}
 		}
-		String query = queryBuilder.toString();
-		System.out.println(query);
 
-		ResultSet rs = stmt.executeQuery(query);
+		final String query = queryBuilder.toString();
+		// execute the query
+		final ResultSet rs = stmt.executeQuery(query);
 		// print the results
+		int ctr = 1;
+		String header = String.format("%-3s | %-22s | %-40s | %-35s | %-3s", "No.", "Business ID", "Name",
+				"Address", "Tips");
+		System.out.println(header);
+
+		// create a line of dashes to separate the header from the data
+		char[] chars = new char[header.length()];
+		Arrays.fill(chars, '-');
+		System.out.println(new String(chars));
+
 		while (rs.next()) {
 			String id = rs.getString("business_id");
 			String name = rs.getString("name");
 			String address = rs.getString("street_address");
 			String tips = rs.getString("num_tips");
-			System.out.println("ID: " + id + " Name: " + name + " Address: " + address + " Tips: " + tips);
 
+			String str = String.format("%-3d | %-22s | %-40s | %-35s | %-3s", ctr, id, name, address,
+					tips);
+			System.out.println(str);
+			ctr++;
 		}
 	}
 
@@ -114,7 +129,6 @@ public class Phase3 {
 				} catch (SQLException e) {
 					System.out.println("Get Data Failed! Check output console");
 					e.printStackTrace();
-					return;
 				}
 				break;
 			case "2":
@@ -123,7 +137,6 @@ public class Phase3 {
 				} catch (SQLException e) {
 					System.out.println("Get Data Failed! Check output console");
 					e.printStackTrace();
-					return;
 				}
 				break;
 			case "3":
@@ -133,9 +146,10 @@ public class Phase3 {
 				} catch (SQLException e) {
 					System.out.println("Get Data Failed! Check output console");
 					e.printStackTrace();
-					return;
 				}
 				break;
+			default:
+				System.out.println("Invalid input");
 
 		}
 
@@ -153,5 +167,4 @@ public class Phase3 {
 
 		// Pass the "connection object to your functions as argument.
 	}
-
 }
