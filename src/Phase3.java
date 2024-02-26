@@ -35,7 +35,7 @@ public class Phase3 {
 		return connection;
 	}
 
-	public static void search_by_category(Connection conn) throws SQLException {
+	public static void searchByCategory(Connection conn) throws SQLException {
 		// prompt for state, city, and categories seperated by commas
 		System.out.print("Enter the state: ");
 		Scanner in = new Scanner(System.in);
@@ -96,21 +96,58 @@ public class Phase3 {
 			System.out.println(str);
 			ctr++;
 		}
+
+		System.out.println("Buisness operations:");
+		System.out.println("1 - Disiplay tips for given buisness");
+		System.out.println("2 - Add tip for given buisness");
+		System.out.println("3 - Return to main menu");
+		System.out.println("Enter the number of the operation you would like to perform: ");
+		String input = "";
+		// ensure that input is equal to one of the options and break if so
+		while (!(input.equals("1") || input.equals("2") || input.equals("3"))) {
+			System.out.println("Invalid input");
+			input = in.nextLine().toLowerCase();
+		}
+
+		switch (input) {
+			case "1":
+				try {
+					displayTips(conn);
+				} catch (SQLException e) {
+					System.out.println("Get Data Failed! Check output console");
+					e.printStackTrace();
+				}
+				break;
+			case "2":
+				try {
+					addTip(conn);
+				} catch (SQLException e) {
+					System.out.println("Get Data Failed! Check output console");
+					e.printStackTrace();
+				}
+				break;
+			case "3":
+				chooseStartingOption(conn);
+				break;
+			default:
+				System.out.println("Invalid input");
+
+		}
 	}
 
-	public static void search_friends_tips(Connection conn) throws SQLException {
+	public static void displayTips(Connection conn) throws SQLException {
 
 	}
 
-	public static void display_tips(Connection conn) throws SQLException {
+	public static void addTip(Connection conn) throws SQLException {
 
 	}
 
-	public static void add_tip(Connection conn) throws SQLException {
+	public static void searchFriendsTips(Connection conn) throws SQLException {
 
 	}
 
-	public static void choose_option(Connection conn) {
+	public static void chooseStartingOption(Connection conn) {
 		// create a scanner so we can read the command-line input
 
 		String input = "";
@@ -125,7 +162,7 @@ public class Phase3 {
 		switch (input) {
 			case "1":
 				try {
-					search_by_category(conn);
+					searchByCategory(conn);
 				} catch (SQLException e) {
 					System.out.println("Get Data Failed! Check output console");
 					e.printStackTrace();
@@ -133,7 +170,7 @@ public class Phase3 {
 				break;
 			case "2":
 				try {
-					search_friends_tips(conn);
+					searchFriendsTips(conn);
 				} catch (SQLException e) {
 					System.out.println("Get Data Failed! Check output console");
 					e.printStackTrace();
@@ -163,7 +200,7 @@ public class Phase3 {
 			return;
 		}
 
-		choose_option(connection);
+		chooseStartingOption(connection);
 
 		// Pass the "connection object to your functions as argument.
 	}
