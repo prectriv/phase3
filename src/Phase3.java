@@ -7,7 +7,8 @@ public class Phase3 {
 	// Replace the "USERID" and "PASSWORD" with your PostgreSQL username and
 	// password (the postgreSQL user you created in Phase2).
 
-	private static final String USERID = "remy";
+	// TODO: ensure this is changed to your local postgres username and password
+	private static final String USERID = "xavier";
 	private static final String PASSWORD = "0509";
 	static Scanner in = new Scanner(System.in);
 
@@ -36,7 +37,7 @@ public class Phase3 {
 		return connection;
 	}
 
-	//TASK 1:
+	// TASK 1:
 	public static void searchByCategory(Connection conn) throws SQLException {
 		// prompt for state, city, and categories seperated by commas
 		System.out.print("Enter the state: ");
@@ -100,51 +101,11 @@ public class Phase3 {
 		// close the result set and the statement
 		rs.close();
 		stmt.close();
-		businessOperations(conn);
+		chooseOption(conn);
 
 	}
 
-	//TASK2:
-	public static void businessOperations(Connection conn) {
-
-		System.out.println("\nBusiness operations:");
-		System.out.println("1 - Disiplay tips for given business");
-		System.out.println("2 - Add tip for given business");
-		System.out.println("3 - Return to main menu");
-		System.out.print("Enter the number of the operation you would like to perform: ");
-		String input = "";
-		// ensure that input is equal to one of the options and break if so
-		while (!(input.equals("1") || input.equals("2") || input.equals("3"))) {
-			input = in.nextLine().toLowerCase();
-		}
-
-		switch (input) {
-			case "1":
-				try {
-					displayTips(conn);
-				} catch (SQLException e) {
-					System.out.println("Get Data Failed! Check output console");
-					e.printStackTrace();
-				}
-				break;
-			case "2":
-				try {
-					addTip(conn);
-				} catch (SQLException e) {
-					System.out.println("Get Data Failed! Check output console");
-					e.printStackTrace();
-				}
-				break;
-			case "3":
-				chooseStartingOption(conn);
-				break;
-			default:
-				System.out.println("Invalid input");
-
-		}
-	}
-
-	//TASK 3:
+	// TASK 3:
 	public static void displayTips(Connection conn) throws SQLException {
 		// prompt for business id
 		System.out.print("Enter the business id: ");
@@ -183,11 +144,11 @@ public class Phase3 {
 		rs.close();
 		stmt.close();
 		// back to menu
-		businessOperations(conn);
+		chooseOption(conn);
 
 	}
 
-	//TASK4:
+	// TASK4:
 	public static void addTip(Connection conn) throws SQLException {
 		// prompt for user ID, business ID and tip text
 		System.out.print("Enter the user id: ");
@@ -196,12 +157,13 @@ public class Phase3 {
 		String business_id = in.nextLine();
 		System.out.print("Enter the tip text: ");
 		String tip_text = in.nextLine();
-		
+
 		Date curr_date = new Date();
 
 		// create statement and execute the query
 		Statement stmt = conn.createStatement();
-		String str = String.format("INSERT INTO tips (user_id, business_id, tip_timestamp, likes,tip_text) VALUES ('%s', '%s', '%s', '%s', '%s')",
+		String str = String.format(
+				"INSERT INTO tips (user_id, business_id, tip_timestamp, likes,tip_text) VALUES ('%s', '%s', '%s', '%s', '%s')",
 				user_id, business_id, curr_date, 0, tip_text);
 		stmt.executeUpdate(str);
 		System.out.println("Tip added successfully!");
@@ -209,7 +171,7 @@ public class Phase3 {
 		// close the statement
 		stmt.close();
 		// back to menu
-		businessOperations(conn);
+		chooseOption(conn);
 
 	}
 
@@ -217,49 +179,51 @@ public class Phase3 {
 
 	}
 
-	public static void chooseStartingOption(Connection conn) {
+	public static void chooseOption(Connection conn) {
 		// create a scanner so we can read the command-line input
 
 		String input = "";
 
 		// Loop until the user inputs 'q' to quit
-		while (!(input.equals("1") || input.equals("2") || input.equals("3"))) {
-			System.out.print("\n1 - Search Businesses\n2 - Display friends tips\n3 - Exit\nEnter your choice: ");
+		while (!(input.equals("1") || input.equals("2") || input.equals("3") || input.equals("4")
+				|| input.equals("5"))) {
+			System.out.print(
+					"\n1 - Search Businesses\n2 - Display tips\n3 - Add a tip\n4 - Display friends tips\n5 - Exit\nEnter your choice: ");
 			input = in.nextLine().toLowerCase();
 			// ensure that input is equal to one of the options and break if so
 		}
 
-		switch (input) {
-			case "1":
-				try {
+		try {
+			switch (input) {
+				case "1":
 					searchByCategory(conn);
-				} catch (SQLException e) {
-					System.out.println("Get Data Failed! Check output console");
-					e.printStackTrace();
-				}
-				break;
-			case "2":
-				try {
+					break;
+
+				case "2":
+					displayTips(conn);
+					break;
+
+				case "3":
+					addTip(conn);
+					break;
+
+				case "4":
 					searchFriendsTips(conn);
-				} catch (SQLException e) {
-					System.out.println("Get Data Failed! Check output console");
-					e.printStackTrace();
-				}
-				break;
-			case "3":
-				try {
+					break;
+
+				case "5":
 					conn.close();
 					System.out.println("Connection closed.");
-				} catch (SQLException e) {
-					System.out.println("Get Data Failed! Check output console");
-					e.printStackTrace();
-				}
-				break;
-			default:
-				System.out.println("Invalid input");
+					break;
 
+				default:
+					System.out.println("Invalid input");
+			}
+
+		} catch (SQLException e) {
+			System.out.println("Get Data Failed! Check output console");
+			e.printStackTrace();
 		}
-
 	}
 
 	public static void main(String[] args) {
@@ -270,7 +234,7 @@ public class Phase3 {
 			return;
 		}
 
-		chooseStartingOption(connection);
+		chooseOption(connection);
 
 		// Pass the "connection object to your functions as argument.
 	}
