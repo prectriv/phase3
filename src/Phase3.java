@@ -185,6 +185,25 @@ public class Phase3 {
 	}
 
 	public static void addTip(Connection conn) throws SQLException {
+		// prompt for user ID, business ID and tip text
+		System.out.print("Enter the user id: ");
+		String user_id = in.nextLine();
+		System.out.print("Enter the business id: ");
+		String business_id = in.nextLine();
+		System.out.print("Enter the tip text: ");
+		String tip_text = in.nextLine();
+
+		// create statement and execute the query
+		Statement stmt = conn.createStatement();
+		String str = String.format("INSERT INTO tips (user_id, business_id, tip_timestamp, tip_text) VALUES ('%s', '%s', '%s', '%s')",
+				user_id, business_id, /* timestamp */, tip_text);
+		stmt.executeUpdate(str);
+		System.out.println("Tip added successfully!");
+
+		// close the statement
+		stmt.close();
+		// back to menu
+		businessOperations(conn);
 
 	}
 
