@@ -55,7 +55,6 @@ public class Phase3 {
 
 		StringBuilder queryBuilder = new StringBuilder(initalQuery);
 
-		System.out.println("");
 		for (int i = 0; i < cats.length; i++) {
 			queryBuilder
 					.append("(select business.business_id, business.name, business.street_address, business.num_tips")
@@ -76,7 +75,7 @@ public class Phase3 {
 		final ResultSet rs = stmt.executeQuery(query);
 		// print the results
 		int ctr = 1;
-		String header = String.format("%-3s | %-22s | %-40s | %-35s | %-3s", "No.", "Business ID", "Name",
+		String header = String.format("\n%-3s | %-22s | %-40s | %-35s | %-3s", "No.", "Business ID", "Name",
 				"Address", "Tips");
 		System.out.println(header);
 
@@ -97,15 +96,23 @@ public class Phase3 {
 			ctr++;
 		}
 
-		System.out.println("Buisness operations:");
+		// close the result set and the statement
+		rs.close();
+		stmt.close();
+		businessOperations(conn);
+
+	}
+
+	public static void businessOperations(Connection conn) {
+
+		System.out.println("\nBuisness operations:");
 		System.out.println("1 - Disiplay tips for given buisness");
 		System.out.println("2 - Add tip for given buisness");
 		System.out.println("3 - Return to main menu");
-		System.out.println("Enter the number of the operation you would like to perform: ");
+		System.out.print("Enter the number of the operation you would like to perform: ");
 		String input = "";
 		// ensure that input is equal to one of the options and break if so
 		while (!(input.equals("1") || input.equals("2") || input.equals("3"))) {
-			System.out.println("Invalid input");
 			input = in.nextLine().toLowerCase();
 		}
 
@@ -136,6 +143,44 @@ public class Phase3 {
 	}
 
 	public static void displayTips(Connection conn) throws SQLException {
+		// prompt for business id
+		System.out.print("Enter the business id: ");
+		String id = in.nextLine();
+		String str = String.format(
+				"SELECT name, tip_timestamp, likes, tip_text FROM tips join users on tips.user_id = users.user_id where business_id = '%s'",
+				id);
+
+		// create a statement and execute the query
+		Statement stmt = conn.createStatement();
+		final ResultSet rs = stmt.executeQuery(str);
+
+		// print the results
+		int ctr = 1;
+		String header = String.format("\n%-3s | %-12s | %-19s | %-5s | %-50s", "No.", "Name", "Timestamp",
+				"Likes", "Tip Text");
+		System.out.println(header);
+		// print a line of dashes to separate the header from the data
+		char[] chars = new char[header.length()];
+		Arrays.fill(chars, '-');
+		System.out.println(new String(chars));
+		// print the data itself
+		while (rs.next()) {
+			String name = rs.getString("name");
+			String timestamp = rs.getString("tip_timestamp");
+			String likes = rs.getString("likes");
+			String tip = rs.getString("tip_text");
+
+			String str2 = String.format("%-3d | %-12s | %-19s | %-5s | %-50s", ctr, name, timestamp, likes,
+					tip);
+			System.out.println(str2);
+			ctr++;
+		}
+
+		// close the result set and the statement
+		rs.close();
+		stmt.close();
+		// back to menu
+		businessOperations(conn);
 
 	}
 
@@ -154,7 +199,7 @@ public class Phase3 {
 
 		// Loop until the user inputs 'q' to quit
 		while (!(input.equals("1") || input.equals("2") || input.equals("3"))) {
-			System.out.println("\n1 - Search busnesses\n2 - Display friends tips\n3 - Exit");
+			System.out.print("\n1 - Search Businesses\n2 - Display friends tips\n3 - Exit\nEnter your choice: ");
 			input = in.nextLine().toLowerCase();
 			// ensure that input is equal to one of the options and break if so
 		}
