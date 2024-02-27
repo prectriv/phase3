@@ -191,9 +191,11 @@ public class Phase3 {
 			// create a statement and execute the query
 		final ResultSet rs = stmt.executeQuery(str);
 
+		
 		// print the results
 		int ctr = 1;
-		String header = String.format("\n%-3s | %-12s | %-19s | %-5s | %-50s", "No.", "Name", "Timestamp",
+		//TODO: properly format the header
+		String header = String.format("\n%-3s | %-12s | %-19s | %-5s | %-50s", "No.", "Name", "Timestamp", 
 				"Likes", "Tip Text");
 		System.out.println(header);
 		// print a line of dashes to separate the header from the data
@@ -210,9 +212,9 @@ public class Phase3 {
 			String tip = rs.getString("tip_text");
 			String timestamp = rs.getString("tip_timestamp");
 		
-
+			//TODO: Properly format Str2
 			String str2 = String.format("%s|, %s|, %s|, %s|, %s|, %s|, %s",  business_name, street_address, zipcode, num_tips, user_name, tip, timestamp);
-			System.out.println(str2);
+			System.out.println(str2); 
 			
 			ctr++;
 		}
