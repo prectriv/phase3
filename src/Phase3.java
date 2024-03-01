@@ -11,8 +11,8 @@ public class Phase3 {
 	// password (the postgreSQL user you created in Phase2).
 
 	// TODO: ensure this is changed to your local postgres username and password
-	private static final String USERID = "xavier";
-	private static final String PASSWORD = "0509";
+	private static final String USERID = "";
+	private static final String PASSWORD = "";
 	static Scanner in = new Scanner(System.in);
 
 	public static Connection connect2postgres() {
