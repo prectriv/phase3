@@ -3,12 +3,15 @@ import java.util.Scanner;
 import java.util.Arrays;
 import java.util.Date;
 
+/* Team 12 - Phase 3
+Mark Bonavita, Yi Hong Jiang, Taras Pylypenko
+ */
 public class Phase3 {
 	// Replace the "USERID" and "PASSWORD" with your PostgreSQL username and
 	// password (the postgreSQL user you created in Phase2).
 
 	// TODO: ensure this is changed to your local postgres username and password
-	private static final String USERID = "remy";
+	private static final String USERID = "xavier";
 	private static final String PASSWORD = "0509";
 	static Scanner in = new Scanner(System.in);
 
@@ -101,7 +104,8 @@ public class Phase3 {
 		// close the result set and the statement
 		rs.close();
 		stmt.close();
-		chooseOption(conn);
+
+		chooseBusinessOption(conn);
 
 	}
 
@@ -174,7 +178,8 @@ public class Phase3 {
 		chooseOption(conn);
 
 	}
-	//TASK 5:
+
+	// TASK 5:
 	public static void searchFriendsTips(Connection conn) throws SQLException {
 		System.out.print("Enter the user id: ");
 		String user_id = in.nextLine();
@@ -183,37 +188,33 @@ public class Phase3 {
 		System.out.print("Enter the city: ");
 		String city_string = in.nextLine();
 
-			// create statement and execute the query
-			Statement stmt = conn.createStatement();
-			String str = String.format(
-					"SELECT Business.name, street_address, zipcode, Business.num_tips, Users.name as usersname, Tips.tip_text, Tips.tip_timestamp FROM Business JOIN Tips ON Business.business_id = Tips.business_id JOIN Users ON Tips.user_id = Users.user_id JOIN Friends ON Users.user_id = Friends.friend_id WHERE Business.city = '%s' AND Business.state = '%s' AND Friends.user_id = '%s' ORDER BY Business.name;",
-					city_string, state_string ,user_id);
-			// create a statement and execute the query
+		// create statement and execute the query
+		Statement stmt = conn.createStatement();
+		String str = String.format(
+				"SELECT Business.name, street_address, zipcode, Business.num_tips, Users.name as usersname, Tips.tip_text, Tips.tip_timestamp, Tips.likes FROM Business JOIN Tips ON Business.business_id = Tips.business_id JOIN Users ON Tips.user_id = Users.user_id JOIN Friends ON Users.user_id = Friends.friend_id WHERE Business.city = '%s' AND Business.state = '%s' AND Friends.user_id = '%s' ORDER BY Business.name;",
+				city_string, state_string, user_id);
+		// create a statement and execute the query
 		final ResultSet rs = stmt.executeQuery(str);
 
 		// print the results
-		int ctr = 1;
-		String header = String.format("\n%-3s | %-12s | %-19s | %-5s | %-50s", "No.", "Name", "Timestamp",
+		String header = String.format("\n%-3s | %-12s | %-19s | %-3s | %-50s", "No.", "Name", "Timestamp",
 				"Likes", "Tip Text");
 		System.out.println(header);
 		// print a line of dashes to separate the header from the data
 		char[] chars = new char[header.length()];
 		Arrays.fill(chars, '-');
-		System.out.println(new String(chars)); 
+		System.out.println(new String(chars));
 		// print the data itself
+		int ctr = 1;
 		while (rs.next()) {
-			String business_name = rs.getString("name");
-			String street_address = rs.getString("street_address");
-			String zipcode = rs.getString("zipcode");
-			String num_tips = rs.getString("num_tips");
 			String user_name = rs.getString("usersname");
-			String tip = rs.getString("tip_text");
 			String timestamp = rs.getString("tip_timestamp");
-		
+			String likes = rs.getString("likes");
+			String tiptxt = rs.getString("tip_text");
 
-			String str2 = String.format("%s|, %s|, %s|, %s|, %s|, %s|, %s",  business_name, street_address, zipcode, num_tips, user_name, tip, timestamp);
+			String str2 = String.format("%-3s | %-12s | %-19s | %-3s | %-50s", ctr, user_name, timestamp, likes,
+					tiptxt);
 			System.out.println(str2);
-			
 			ctr++;
 		}
 
@@ -225,15 +226,12 @@ public class Phase3 {
 	}
 
 	public static void chooseOption(Connection conn) {
-		// create a scanner so we can read the command-line input
-
 		String input = "";
 
 		// Loop until the user inputs 'q' to quit
-		while (!(input.equals("1") || input.equals("2") || input.equals("3") || input.equals("4")
-				|| input.equals("5"))) {
+		while (!(input.equals("1") || input.equals("2") || input.equals("3"))) {
 			System.out.print(
-					"\n1 - Search Businesses\n2 - Display tips\n3 - Add a tip\n4 - Display friends tips\n5 - Exit\nEnter your choice: ");
+					"\n1 - Search Businesses\n2 - Display friends tips\n3 - Exit\nEnter your choice: ");
 			input = in.nextLine().toLowerCase();
 			// ensure that input is equal to one of the options and break if so
 		}
@@ -245,18 +243,10 @@ public class Phase3 {
 					break;
 
 				case "2":
-					displayTips(conn);
-					break;
-
-				case "3":
-					addTip(conn);
-					break;
-
-				case "4":
 					searchFriendsTips(conn);
 					break;
 
-				case "5":
+				case "3":
 					conn.close();
 					System.out.println("Connection closed.");
 					break;
@@ -271,6 +261,42 @@ public class Phase3 {
 		}
 	}
 
+	public static void chooseBusinessOption(Connection conn) {
+		String input = "";
+
+		// Loop until the user inputs 'q' to quit
+		while (!(input.equals("1") || input.equals("2") || input.equals("3"))) {
+			System.out.print(
+					"\n1 - Display tips\n2 - Add a tip\n3 - Return to main menu\nEnter your choice: ");
+			input = in.nextLine().toLowerCase();
+			// ensure that input is equal to one of the options and break if so
+		}
+
+		try {
+			switch (input) {
+				case "1":
+					displayTips(conn);
+					break;
+
+				case "2":
+					addTip(conn);
+					break;
+
+				case "3":
+					chooseOption(conn);
+					break;
+
+				default:
+					System.out.println("Invalid input");
+			}
+
+		} catch (SQLException e) {
+			System.out.println("Get Data Failed! Check output console");
+			e.printStackTrace();
+		}
+
+	}
+
 	public static void main(String[] args) {
 		// Create PostgreSQL connection
 		Connection connection = connect2postgres();
@@ -280,7 +306,5 @@ public class Phase3 {
 		}
 
 		chooseOption(connection);
-
-		// Pass the "connection object to your functions as argument.
 	}
 }
